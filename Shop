@@ -1,14 +1,14 @@
-return function(Window, player)
+return function(Window, player, parentTab)
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local MarketplaceService = game:GetService("MarketplaceService")
-    
+
     local function notify(title, message)
         title = title or "Shop"
         pcall(function()
             Window:Notify(title, message, 3)
         end)
     end
-    
+
     local function getCharacter()
         if not player then return nil end
         local char = player.Character
@@ -17,98 +17,102 @@ return function(Window, player)
         end
         return player.CharacterAdded:Wait()
     end
-    
-    local ShopTab = Window:Tab("Shop", "shopping-cart")
-    
+
+    local ShopTab = parentTab
+    if not ShopTab then
+        notify("Error", "No parent tab provided for Shop!")
+        return
+    end
+
     local ItemsSection = ShopTab:Section("Items", "Left", "shopping-cart")
-    
+
     ItemsSection:Button("Buy Rokakaka ($2,500)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Rokakaka"}, 1, 2)
             notify("Shop", "Bought Rokakaka")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Pure Rokakaka ($4,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Pure Rokakaka"}, 1, 2)
             notify("Shop", "Bought Pure Rokakaka")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Mysterious Arrow ($750)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Mysterious Arrow"}, 1, 2)
             notify("Shop", "Bought Mysterious Arrow")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Lucky Arrow ($75,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Lucky Arrow"}, 1, 2)
             notify("Shop", "Bought Lucky Arrow")
         end)
     end)
-    
+
     ItemsSection:Button("Buy DIO's Diary ($20,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x DIO's Diary"}, 1, 2)
             notify("Shop", "Bought DIO's Diary")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Rib Cage ($3,500)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Rib Cage of The Saint's Corpse"}, 1, 2)
             notify("Shop", "Bought Rib Cage")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Left Arm ($15,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Left Arm of The Saint's Corpse"}, 1, 2)
             notify("Shop", "Bought Left Arm")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Pelvis ($45,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Pelvis of The Saint's Corpse"}, 1, 2)
             notify("Shop", "Bought Pelvis")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Heart ($45,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("PurchaseShopItem", {["ItemName"] = "1x Heart of The Saint's Corpse"}, 1, 2)
             notify("Shop", "Bought Heart")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Mysterious Bow", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["NPC"] = "Mysterious Bow Seller", ["Dialogue"] = "Dialogue4", ["Option"] = "Option1"})
             notify("Shop", "Bought Mysterious Bow")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Pizza ($50)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["NPC"] = "Pizza", ["Option"] = "Option1", ["Dialogue"] = "Dialogue2"}, 1, 2)
             notify("Shop", "Bought Pizza")
         end)
     end)
-    
+
     ItemsSection:Button("Buy Tea ($50)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["NPC"] = "Cafe", ["Option"] = "Option1", ["Dialogue"] = "Dialogue2"}, 1, 2)
             notify("Shop", "Bought Tea")
         end)
     end)
-    
+
     local autoBuyLuckyArrow = false
     local luckyArrowPrice = 75000
-    
+
     ItemsSection:Toggle("Auto Buy Lucky Arrow", false, function(state)
         autoBuyLuckyArrow = state
         if state then
@@ -122,7 +126,7 @@ return function(Window, player)
                         if not stats then return end
                         local money = stats:FindFirstChild("Money")
                         if not money then return end
-                        
+
                         local currentCount = 0
                         local maxLuckyArrows = 10
                         local has2x = false
@@ -130,7 +134,7 @@ return function(Window, player)
                             has2x = MarketplaceService:UserOwnsGamePassAsync(player.UserId, 14597778)
                         end)
                         if has2x then maxLuckyArrows = 20 end
-                        
+
                         if player.Backpack then
                             for _, item in pairs(player.Backpack:GetChildren()) do
                                 if item.Name == "Lucky Arrow" then currentCount = currentCount + 1 end
@@ -141,7 +145,7 @@ return function(Window, player)
                                 if item.Name == "Lucky Arrow" then currentCount = currentCount + 1 end
                             end
                         end
-                        
+
                         if money.Value >= luckyArrowPrice and currentCount < maxLuckyArrows then
                             local char = player.Character
                             if char and char:FindFirstChild("RemoteEvent") then
@@ -157,60 +161,60 @@ return function(Window, player)
             notify("Shop", "Auto Buy Lucky Arrow disabled.")
         end
     end)
-    
+
     local SpecsSection = ShopTab:Section("Fighting Styles", "Right", "sword")
-    
+
     SpecsSection:Button("Buy Hamon ($15,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue5", ["NPC"] = "Jonathan", ["Option"] = "Option1"})
             notify("Shop", "Bought Hamon")
         end)
     end)
-    
+
     SpecsSection:Button("Buy Boxing ($10,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue5", ["NPC"] = "Quinton", ["Option"] = "Option1"})
             notify("Shop", "Bought Boxing")
         end)
     end)
-    
+
     SpecsSection:Button("Buy Spin ($10,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue5", ["NPC"] = "Gyro", ["Option"] = "Option1"})
             notify("Shop", "Bought Spin")
         end)
     end)
-    
+
     SpecsSection:Button("Buy Vampire ($10,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue5", ["NPC"] = "Elder Vampire Roomy", ["Option"] = "Option1"})
             notify("Shop", "Bought Vampire")
         end)
     end)
-    
+
     SpecsSection:Button("Buy Pluck ($10,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue5", ["NPC"] = "Uzurashi", ["Option"] = "Option1"})
             notify("Shop", "Bought Pluck")
         end)
     end)
-    
+
     SpecsSection:Button("Buy Boxing Gloves ($1,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue1", ["NPC"] = "Boxing Gloves", ["Option"] = "Option1"})
             notify("Shop", "Bought Boxing Gloves")
         end)
     end)
-    
+
     SpecsSection:Button("Buy Sword ($1,000)", function()
         pcall(function()
             getCharacter().RemoteEvent:FireServer("EndDialogue", {["Dialogue"] = "Dialogue1", ["NPC"] = "Pluck", ["Option"] = "Option1"})
             notify("Shop", "Bought Sword")
         end)
     end)
-    
+
     local HalloweenSection = ShopTab:Section("Halloween", "Left", "ghost")
-    
+
     HalloweenSection:Button("Halloween Event Dialogue", function()
         pcall(function()
             local newDialogue = ReplicatedStorage:FindFirstChild("NewDialogue")
@@ -227,6 +231,6 @@ return function(Window, player)
             end
         end)
     end)
-    
-    notify("System", "Shop tab loaded successfully!")
+
+    notify("System", "Shop sections loaded under Utility!")
 end
